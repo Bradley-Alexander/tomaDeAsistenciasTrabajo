@@ -1,8 +1,4 @@
 ---
-title: "04-capitulo"
-format: html
----
----
 title: "Conversión de Autómatas Finitos a Expresiones Regulares"
 author: "Bradley Alexnader Poma Vera"
 format: 
