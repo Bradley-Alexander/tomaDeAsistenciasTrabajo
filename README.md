@@ -4,7 +4,7 @@ format: html
 ---
 
 ---
-#"Conversión de Autómatas Finitos a Expresiones Regulares"
+# Conversión de Autómatas Finitos a Expresiones Regulares
 ---
 
 ## Introducción
