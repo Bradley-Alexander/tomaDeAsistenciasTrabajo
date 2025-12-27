@@ -1,18 +1,4 @@
----
-title: "Definición de Ambigüedad en Gramáticas Independientes del Contexto"
-author: "Bradley Poma Vera"
-date: "2025-12-27"
-lang: es
-format:
-  html:
-    theme: flatly
-    toc: true
-    toc-title: "Índice"
-    number-sections: true
-    code-fold: true
-    self-contained: true
-editor: visual
----
+# Definición de ambigüedad en gramáticas independientes del contexto
 
 ## 1. Introducción
 
