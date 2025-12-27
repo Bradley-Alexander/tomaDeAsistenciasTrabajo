@@ -1,80 +1,72 @@
 ---
-title: "Guía de Minimización de Autómatas Finitos"
-format: html
-editor: visual
+title: "Definición de Ambigüedad en Gramáticas Independientes del Contexto"
+author: "Bradley Poma Vera"
+date: "2025-12-27"
 lang: es
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-title: "Índice"
+    number-sections: true
+    code-fold: true
+    self-contained: true
+editor: visual
 ---
 
-## Introducción: ¿Por qué minimizar?
+## 1. Introducción
 
-Cuando diseñamos un **Autómata Finito Determinista (DFA)**, a menudo terminamos con una máquina que tiene más "piezas" (estados) de las necesarias. Funciona bien, pero es redundante.
+En la teoría de lenguajes formales, una **Gramática Independiente del Contexto (GIC)** describe la estructura sintáctica de un lenguaje. 
+Sin embargo, ciertas gramáticas presentan un defecto estructural conocido como **ambigüedad**, el cual complica el proceso de análisis sintáctico (*parsing*) en la construcción de compiladores.
 
-El proceso de **minimización** consiste en transformar ese autómata en su versión más eficiente posible. El objetivo es obtener un autómata único que haga exactamente el mismo trabajo (reconocer el mismo lenguaje) pero utilizando la menor cantidad de estados posibles.
+Este informe define formalmente la ambigüedad y presenta ejemplos prácticos visualizados mediante árboles de derivación.
 
-### La Estrategia General
+## 2. Definición Formal
 
-Para lograr esto, no eliminamos estados al azar. Seguimos un algoritmo lógico que consta de dos grandes fases:
+Sea $G = (V, \Sigma, R, S)$ una gramática independiente del contexto.
 
-1.  **Agrupar (La Partición):** Identificamos qué estados son "equivalentes" entre sí. Si dos estados se comportan exactamente igual ante cualquier entrada, no necesitamos tenerlos por separado; pueden considerarse gemelos.
-2.  **Fusionar:** Una vez identificados los grupos de gemelos, los fusionamos en un solo estado representativo.
+Una gramática $G$ se denomina **ambigua** si existe alguna cadena $w$ perteneciente al lenguaje $L(G)$ para la cual se cumple **al menos una** de las siguientes condiciones:
 
-A continuación, explicamos en detalle la primera fase, que es el corazón del procedimiento.
+1.  Existen dos o más **árboles de derivación** (análisis sintáctico) distintos para $w$.
+2.  Existen dos o más **derivaciones por la izquierda** distintas para $w$.
+3.  Existen dos o más **derivaciones por la derecha** distintas para $w$.
+
+### Nota sobre la semántica
+La ambigüedad sintáctica suele implicar **ambigüedad semántica**: si un compilador puede construir dos árboles diferentes, puede interpretar el código de dos maneras distintas (por ejemplo, cambiando el orden de ejecución de operaciones matemáticas).
 
 ---
 
-## Calculando la Partición del Lenguaje (Agrupando Estados)
+## 3. Ejemplo Práctico: Expresiones Aritméticas
 
-La clave para minimizar es descubrir qué estados son indistinguibles. Para ello, utilizamos el concepto de **partición**.
+Consideremos la siguiente gramática $G$ que genera expresiones de sumas y multiplicaciones:
 
-Imagina una partición como una forma de clasificar todos los estados del autómata en diferentes "cajas" o bloques.
-* Cada estado debe estar en una sola caja.
-* No puede sobrar ningún estado.
+$$
+S \rightarrow S + S \mid S * S \mid a
+$$
 
-El objetivo del algoritmo es refinar estas cajas progresivamente: empezamos con cajas muy grandes y las vamos dividiendo (haciendo más específicas) hasta que todos los estados dentro de una misma caja sean verdaderamente equivalentes.
+Analizaremos la cadena de entrada:
+$$w = a + a * a$$
 
-### Paso 1: La División Inicial (El Presente)
+Esta cadena es ambigua porque podemos generar dos árboles de análisis sintáctico completamente diferentes.
 
-La primera distinción es la más obvia y se basa en lo que los estados "son" en este momento. Dividimos todo el autómata en dos grupos fundamentales:
+### Caso A: Interpretación (a + a) * a
+En este árbol, la **suma** se evalúa primero (está más abajo en el árbol).
 
-* **Grupo de Aceptación (Finales):** Aquí van todos los estados que dicen "Sí" (aceptan la cadena).
-* **Grupo de No Aceptación (No Finales):** Aquí van todos los estados que no aceptan.
+```{mermaid}
+%%| label: fig-arbol1
+%%| fig-cap: "Árbol 1: La suma tiene precedencia sobre la multiplicación"
+graph TD
+    Root[S] --> Left[S]
+    Root --> Op1[*]
+    Root --> Right[S]
+    
+    Left --> L1[S]
+    Left --> Op2[+]
+    Left --> L2[S]
+    
+    L1 --> term1(a)
+    L2 --> term2(a)
+    Right --> term3(a)
 
-**¿Por qué hacemos esto?** Porque un estado que acepta nunca puede ser equivalente a uno que no acepta. Es la diferencia fundamental.
-
-### Paso 2: El Refinamiento (Mirando al Futuro)
-
-Una vez que tenemos la división inicial, debemos comprobar si los estados dentro de un mismo grupo realmente merecen seguir juntos. Para ello, miramos cómo reaccionan ante las entradas (las letras del alfabeto del autómata).
-
-**La Regla de la Separación:**
-Dos estados, llamémoslos **A** y **B**, pueden permanecer en el mismo grupo solo si, al recibir la misma letra, ambos viajan a destinos que también están en el mismo grupo.
-
-Si **A** viaja a un grupo "X" y **B** viaja a un grupo "Y" (y "X" e "Y" son grupos distintos), entonces **A** y **B** tienen destinos diferentes. Esto significa que **A** y **B** no se comportan igual y deben separarse.
-
-#### ¿Cómo funciona el proceso de división ("Splitting")?
-
-El algoritmo busca "inestabilidad" en los grupos. Un grupo es inestable si contiene estados que quieren ir a sitios distintos.
-
-1.  Tomamos un grupo actual y una letra del alfabeto (por ejemplo, la letra 'a').
-2.  Observamos hacia dónde van todos los estados de ese grupo con la letra 'a'.
-3.  Si todos van a destinos que pertenecen al mismo bloque, el grupo se queda como está.
-4.  **Pero**, si unos van al Bloque 1 y otros van al Bloque 2, entonces nuestro grupo original se rompe en dos:
-    * Subgrupo de los que van al Bloque 1.
-    * Subgrupo de los que van al Bloque 2.
-
-### El Algoritmo de Refinamiento (Paso a Paso)
-
-Podemos resumir el algoritmo lógico ("LanPar") de la siguiente manera sencilla:
-
-1.  **Inicio:** Crea una partición inicial con solo dos grupos: {Finales} y {No Finales}.
-2.  **Ciclo de Búsqueda:** Mientras existan grupos "inestables" (grupos donde los estados reaccionan diferente ante una letra):
-    * Elige un grupo y una letra que demuestren esa diferencia.
-    * Divide ese grupo en subgrupos más pequeños basados en sus destinos.
-3.  **Terminación (Estabilidad):** El proceso se detiene cuando ya no es posible dividir más. Esto ocurre cuando, para cualquier grupo que elijas y cualquier letra que uses, todos los estados de ese grupo siempre saltan a estados que pertenecen a un mismo bloque destino.
-
-### Resultado Final
-
-Al terminar, obtenemos la **Partición Estable**. Cada bloque de esta partición contiene estados que son matemáticamente equivalentes.
-* Reconocen exactamente el mismo "futuro" del lenguaje.
-* Si intercambiaras uno por otro, el autómata seguiría funcionando igual.
-
-Esta partición es la receta perfecta para construir el autómata minimizado: cada bloque se convertirá en un único estado en la nueva versión reducida de la máquina.
+    style Root fill:#f9f,stroke:#333
+    style Op1 fill:#ff9,stroke:#333
