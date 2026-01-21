@@ -1,138 +1,189 @@
-# Casos de Prueba - Módulo de Atleta
+# MATRIZ DE INCIDENCIAS - TESTS MÓDULOS ATLETA Y ENTRENADOR
 
-## FRONTEND - CREAR PERFIL DE ATLETA
+## Resumen Ejecutivo
+- **Total de Defectos Identificados:** 15
+- **Módulos Afectados:** 3 (HistorialMédico, Entrenamiento, Horario)
+- **Estado General:** 15 en Proceso de Arreglo
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A01 | Crear perfil atleta válido | Crear un perfil de atleta con todos los campos obligatorios | Nombres: Juan, Apellidos: Perez, Fecha Nacimiento: 2000-05-15, Especialidad: NATACION, Años Experiencia: 5, Categoría: SENIOR | Toast: "Perfil de atleta creado exitosamente". Redirección a Dashboard. | Usuario autenticado con rol ATLETA | |
-| TC-A02 | Validar Usuario No Atleta | Intento de crear perfil con rol no ATLETA | Usuario con rol ENTRENADOR intenta crear perfil | Error: "Solo usuarios con rol ATLETA pueden crear perfil deportivo" | Usuario autenticado sin rol ATLETA | |
-| TC-A03 | Validar Perfil Duplicado | Intento de crear segundo perfil para mismo usuario | Usuario que ya tiene perfil intenta crear otro | Error: "El atleta ya existe" | Usuario con perfil de atleta existente | |
-| TC-A04 | Validar Especialidad | Selección de especialidad deportiva | Especialidad: ATLETISMO | Perfil creado con especialidad asignada correctamente | | |
-| TC-A05 | Validar Años Experiencia | Ingreso de años de experiencia | Años Experiencia: -1 (negativo) | Error: "Años de experiencia no válido" | | |
-| TC-A06 | Validar Categoría | Selección de categoría de competencia | Categoría: JUNIOR | Perfil creado con categoría asignada | Especialidad seleccionada | |
-| TC-A07 | Campos Opcionales | Crear perfil sin llenar datos opcionales | Datos opcionales vacíos | Perfil creado exitosamente | Campos obligatorios completos | |
+---
 
-## BACKEND - CREAR PERFIL DE ATLETA
+## MATRIZ DETALLADA DE INCIDENCIAS
 
-| ID | Funcionalidad | Descripción | Datos de Entrada (JSON) | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A01 | Crear perfil atleta válido | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR"}` | `{"success": true, "message": "Perfil creado exitosamente", "data": {"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` (Status 201) | Usuario ATLETA autenticado, sin perfil previo | Exitoso |
-| TC-A02 | Validar Usuario No Atleta | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR"}` (Usuario ENTRENADOR) | `{"success": false, "message": "Solo usuarios con rol ATLETA pueden crear perfil deportivo", "errors": null}` (Status 403) | Usuario autenticado con rol ENTRENADOR | Fallido |
-| TC-A03 | Validar Perfil Duplicado | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR"}` (Usuario con perfil existente) | `{"success": false, "message": "El atleta ya existe", "errors": null}` (Status 400) | Usuario ATLETA con perfil existente | Fallido |
-| TC-A04 | Usuario No Encontrado | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR"}` (user_id inválido) | `{"success": false, "message": "Usuario no encontrado", "errors": null}` (Status 404) | user_id que no existe | Fallido |
-| TC-A05 | Validar Especialidad | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "ESPECIALIDAD_INVALIDA", "anios_experiencia": 5, "categoria": "SENIOR"}` | `{"success": false, "message": "Especialidad inválida", "errors": [{"field": "especialidad", "message": "Valor no permitido"}]}` | | Fallido |
-| TC-A06 | Validar Años Experiencia | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": -1, "categoria": "SENIOR"}` | `{"success": false, "message": "Validation Error", "errors": [{"field": "anios_experiencia", "message": "Debe ser >= 0"}]}` | | Fallido |
-| TC-A07 | Crear con datos opcionales | POST /api/v1/atletas/ | `{"nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5}` | `{"success": true, "message": "Perfil creado exitosamente", "data": {"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": null, "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` | Datos opcionales omitidos | Exitoso |
+| ID Defecto | Caso de Prueba | Módulo | Descripción del Error | Resultado Esperado | Resultado Obtenido | Evidencia | Estado |
+|---|---|---|---|---|---|---|---|
+| **BUG-HM-01** | TC-A21 | HistorialMédico | AttributeError: 'coroutine' object has no attribute 'scalar_one_or_none' | Cálculo automático de IMC (22.86) | El mock no devuelve el resultado correcto | Mock impropiamente configurado con lambda en side_effect | En Proceso |
+| **BUG-HM-02** | TC-A22 | HistorialMédico | AttributeError: type object 'RoleEnum' has no attribute 'ATLETA' | Validación de rol ATLETA | Error al acceder al enum | Importación correcta pero atributo no definido en enum | En Proceso |
+| **BUG-HM-03** | TC-A23 | HistorialMédico | AttributeError: 'MagicMock' object has no attribute 'role' | Verificar si usuario tiene rol ATLETA | Mock no tiene propiedad 'role' configurada | Mock incompleto sin propiedades esperadas | En Proceso |
+| **BUG-HM-04** | TC-A24 | HistorialMédico | AttributeError: 'coroutine' object has no attribute 'peso' | Obtener historial y verificar peso=70.0 | El objeto devuelto no es accesible correctamente | Mock devuelve corrutina en lugar de objeto | En Proceso |
+| **BUG-HM-05** | TC-A25 | HistorialMédico | AttributeError: 'coroutine' object has no attribute 'status_code' | Lanzar HTTPException con status 404 | El mock no devuelve la excepción correctamente | Uso incorrecto de AsyncMock | En Proceso |
+| **BUG-HM-06** | TC-A26 | HistorialMédico | AttributeError: 'MagicMock' object has no attribute '__getitem__' | Acceso a user_id del resultado | El objeto mock no es subscriptable | Falta configuración del mock como dict | En Proceso |
+| **BUG-HM-07** | TC-A27 | HistorialMédico | AttributeErraor: type object 'RoleEnum' has no attribute 'ATLETA' | Verificación de rol en búsqueda por usuario | Error al validar rol del usuario | RoleEnum.ATLETA no está definido | En Proceso |
+| **BUG-HM-08** | TC-A28 | HistorialMédico | AttributeError: 'coroutine' object has no attribute 'scalars' | Listar historiales con paginación | El mock no tiene método scalars() | execute().scalars no funciona correctamente | En Proceso |
+| **BUG-HM-09** | TC-A28b | HistorialMédico | AttributeError: 'coroutine' object has no attribute 'scalars' | Paginación con skip=10, limit=10 | El mock no devuelve lista iterables | Problema con configuración de side_effect | En Proceso |
+| **BUG-HM-10** | TC-A28c | HistorialMédico | AttributeError: type object has no attribute '__len__' | Lista vacía retorna 0 elementos | El mock no devuelve lista evaluable | Falta inicializar scalars() con lista vacía | En Proceso |
+| **BUG-EN-01** | TC-EN-02 | Entrenamiento | NameError: name 'HorarioCreateNested' is not defined | Crear entrenamiento con horarios nested | Importación falta en test | Schema no está importado correctamente | En Proceso |
+| **BUG-EN-02** | TC-EN-06 | Entrenamiento | NameError: name 'Entrenamiento' is not defined | Listar entrenamientos del entrenador | Error al retornar objeto Entrenamiento | Falta importar modelo o schema | En Proceso |
+| **BUG-EN-03** | TC-EN-12 | Entrenamiento | NameError: name 'Entrenamiento' is not defined | Actualizar entrenamiento | El mock no retorna Entrenamiento válido | Schema o modelo no importado | En Proceso |
+| **BUG-HR-01** | TC-HR-02 | Horario | ValidationError: 2 validation errors for Horario | Validación de horas (inicio < fin) | El schema no valida horas correctamente | Falta validador personalizado en schema | En Proceso |
+| **BUG-AS-01** | TC-AS-01 | Asistencia | AttributeError: 'coroutine' object has no attribute 'atleta_id' | Registrar atleta en horario exitoso | El mock retorna corrutina en lugar de objeto | AsyncMock no está configurado correctamente | En Proceso |
 
-## FRONTEND - VER PERFIL DE ATLETA
+---
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A08 | Ver mi perfil | Atleta visualiza su propio perfil | Click en "Mi Perfil" | Página carga con datos del perfil del atleta | Usuario autenticado con perfil de atleta | |
-| TC-A09 | Ver perfil de otro atleta | Visualizar perfil de otro atleta por ID | ID de otro atleta: 5 | Página carga con datos del otro atleta | Usuario autenticado | |
-| TC-A10 | Perfil no encontrado | Intento de ver perfil que no existe | ID: 9999 | Error: "Atleta no encontrado" | | |
-| TC-A11 | Listar todos los atletas | Obtener lista de todos los atletas registrados | Página de listado | Tabla con todos los atletas, paginada | | |
-| TC-A12 | Paginación | Navegar entre páginas de atletas | Skip: 0, Limit: 10 | Muestra primeros 10 atletas | | |
+## ANÁLISIS POR MÓDULO
 
-## BACKEND - VER PERFIL DE ATLETA
+### 📋 MÓDULO: HistorialMédico (8 Defectos)
+**Descripción Genérica:** Los tests fallan principalmente por mocking impropio de AsyncMock y side_effect con lambdas.
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A08 | Ver mi perfil | GET /api/v1/atletas/me | Header: Authorization Bearer token | `{"success": true, "data": {"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` (Status 200) | Usuario autenticado con perfil de atleta | Exitoso |
-| TC-A09 | Ver perfil de otro atleta | GET /api/v1/atletas/{atleta_id} | atleta_id: 5 | `{"success": true, "data": {"id": 5, "user_id": 12, "nombres": "Carlos", "apellidos": "Gomez", "fecha_nacimiento": "1998-08-20", "especialidad": "ATLETISMO", "anios_experiencia": 8, "categoria": "SENIOR", "external_id": "660e8400-e29b-41d4-a716-446655440001", "created_at": "2025-01-15T14:20:00", "updated_at": "2025-01-15T14:20:00"}, "errors": null}` (Status 200) | Usuario autenticado | Exitoso |
-| TC-A10 | Perfil no encontrado | GET /api/v1/atletas/{atleta_id} | atleta_id: 9999 | `{"success": false, "message": "Atleta no encontrado", "errors": null}` (Status 404) | atleta_id no existe | Fallido |
-| TC-A11 | Listar todos los atletas | GET /api/v1/atletas/?skip=0&limit=100 | skip: 0, limit: 100 | `{"success": true, "data": [{"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, {"id": 2, "user_id": 11, "nombres": "Maria", "apellidos": "Lopez", "fecha_nacimiento": "2001-03-10", "especialidad": "ATLETISMO", "anios_experiencia": 3, "categoria": "JUNIOR", "external_id": "770e8400-e29b-41d4-a716-446655440002", "created_at": "2025-01-20T09:15:00", "updated_at": "2025-01-20T09:15:00"}], "errors": null}` (Status 200) | | Exitoso |
-| TC-A12 | Paginación | GET /api/v1/atletas/?skip=10&limit=10 | skip: 10, limit: 10 | Retorna atletas del 11 al 20 con estructura: `{"id": ..., "user_id": ..., "nombres": ..., "apellidos": ..., "fecha_nacimiento": ..., "especialidad": ..., "anios_experiencia": ..., "categoria": ..., "external_id": ..., "created_at": ..., "updated_at": ...}` | | Exitoso |
-| TC-A13 | Sin perfil de atleta | GET /api/v1/atletas/me | Usuario sin perfil de atleta | `{"success": false, "message": "No tienes perfil de atleta", "errors": null}` (Status 404) | Usuario autenticado sin perfil atleta | Fallido |
+**Problemas Identificados:**
+1. ❌ `mock_db.execute.side_effect = [MagicMock(scalar_one_or_none=lambda: user)]` - **Lambda incorrecto**
+2. ❌ Las lambdas no están siendo llamadas correctamente por el mock
+3. ❌ Falta retornar objetos mock con métodos `scalar_one_or_none()` y `scalars()`
 
-## FRONTEND - ACTUALIZAR PERFIL DE ATLETA
+**Solución:**
+```python
+# ❌ INCORRECTO
+mock_db.execute.side_effect = [
+    MagicMock(scalar_one_or_none=lambda: user)
+]
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A14 | Actualizar datos básicos | Cambiar especialidad y años de experiencia | Especialidad: ATLETISMO, Años: 10 | Toast: "Perfil actualizado exitosamente" | Perfil de atleta existente | |
-| TC-A15 | Actualizar categoría | Cambiar categoría de competencia | Categoría: MASTER | Perfil actualizado con nueva categoría | | |
-| TC-A16 | Actualizar parcial | Actualizar solo algunos campos | Solo Especialidad | Perfil actualizado, otros campos sin cambios | | |
-| TC-A17 | Actualizar perfil inválido | Intento de actualizar atleta que no existe | ID: 9999 | Error: "Atleta no encontrado" | | |
+# ✅ CORRECTO
+user_result = MagicMock()
+user_result.scalar_one_or_none = MagicMock(return_value=user)
+mock_db.execute.side_effect = [user_result]
+```
 
-## BACKEND - ACTUALIZAR PERFIL DE ATLETA
+---
 
-| ID | Funcionalidad | Descripción | Datos de Entrada (JSON) | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A14 | Actualizar datos básicos | PUT /api/v1/atletas/{atleta_id} | `{"especialidad": "ATLETISMO", "anios_experiencia": 10}` | `{"success": true, "data": {"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "ATLETISMO", "anios_experiencia": 10, "categoria": "SENIOR", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T11:45:00"}, "errors": null}` (Status 200) | Atleta existe | Exitoso |
-| TC-A15 | Actualizar categoría | PUT /api/v1/atletas/{atleta_id} | `{"categoria": "MASTER"}` | `{"success": true, "data": {"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "MASTER", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T11:50:00"}, "errors": null}` (Status 200) | | Exitoso |
-| TC-A16 | Actualizar parcial | PUT /api/v1/atletas/{atleta_id} | `{"especialidad": "NATACION"}` | Actualiza solo especialidad: `{"id": 1, "user_id": 10, "nombres": "Juan", "apellidos": "Perez", "fecha_nacimiento": "2000-05-15", "especialidad": "NATACION", "anios_experiencia": 5, "categoria": "SENIOR", "external_id": "550e8400-e29b-41d4-a716-446655440000", "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T11:55:00"}` | | Exitoso |
-| TC-A17 | Atleta no encontrado | PUT /api/v1/atletas/9999 | `{"especialidad": "ATLETISMO", "anios_experiencia": 10, "categoria": "SENIOR"}` | `{"success": false, "message": "Atleta no encontrado", "errors": null}` (Status 404) | ID no existe | Fallido |
-| TC-A18 | Validar especialidad actualizada | PUT /api/v1/atletas/{atleta_id} | `{"especialidad": "INVALIDA"}` | `{"success": false, "message": "Validation Error", "errors": [{"field": "especialidad", "message": "Valor no permitido"}]}` (Status 422) | | Fallido |
+### 📋 MÓDULO: Entrenamiento (3 Defectos)
+**Descripción Genérica:** Fallos por importaciones faltantes en tests.
 
-## FRONTEND - ELIMINAR PERFIL DE ATLETA
+**Problemas Identificados:**
+1. ❌ `HorarioCreateNested` no está importado pero se usa en schema
+2. ❌ Schema de `Entrenamiento` no importado en algunos tests
+3. ❌ Falta validación de modelos
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A19 | Eliminar perfil | Eliminar perfil de atleta | Confirmación de eliminación | Modal de confirmación. Toast: "Perfil eliminado exitosamente" | Perfil de atleta existente | |
-| TC-A20 | Cancelar eliminación | Cancelar proceso de eliminación | Click en "Cancelar" | Modal se cierra sin cambios | Modal de eliminación abierto | |
+**Solución Propuesta:**
+```python
+# Agregar al inicio del test:
+from app.modules.entrenador.domain.schemas.entrenamiento_schema import (
+    EntrenamientoCreate,
+    EntrenamientoUpdate,
+    HorarioCreateNested  # ← FALTABA
+)
+```
 
-## BACKEND - ELIMINAR PERFIL DE ATLETA
+---
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A19 | Eliminar perfil | DELETE /api/v1/atletas/{atleta_id} | atleta_id: 1 | `{}` (Status 204 No Content) | Atleta existe | Exitoso |
-| TC-A20 | Perfil no encontrado | DELETE /api/v1/atletas/9999 | atleta_id: 9999 | `{"success": false, "message": "Atleta no encontrado", "errors": null}` (Status 404) | ID no existe | Fallido |
+### 📋 MÓDULO: Horario (1 Defecto)
+**Descripción Genérica:** Validación de horas no se ejecuta correctamente.
 
-## FRONTEND - HISTORIAL MÉDICO DEL ATLETA
+**Problemas Identificados:**
+1. ❌ El validator del schema no rechaza `hora_inicio >= hora_fin`
+2. ❌ Falta validador personalizado en Pydantic
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A21 | Crear historial médico | Registrar datos médicos del atleta | Talla: 1.80, Peso: 75, Alergias: "Ninguna", Enfermedades: "Ninguna" | Toast: "Historial médico registrado exitosamente" | Usuario autenticado con rol ATLETA | |
-| TC-A22 | Validar IMC | Verificar que el IMC se calcula correctamente | Talla: 1.80, Peso: 75 | IMC mostrado: 23.15 | | |
-| TC-A23 | Ver historial médico | Atleta visualiza su historial médico | Click en "Historial Médico" | Página carga con datos médicos del atleta | Historial médico creado | |
-| TC-A24 | Actualizar historial | Actualizar datos médicos | Peso: 80 | Toast: "Historial actualizado exitosamente" | Historial médico existente | |
-| TC-A25 | Validar dato duplicado | Intento de crear segundo historial | Crear nuevo historial | Error: "El usuario ya tiene historial médico" | Historial médico ya existe | |
+**Solución Propuesta:**
+```python
+from pydantic import field_validator
 
-## BACKEND - HISTORIAL MÉDICO DEL ATLETA
+class HorarioCreate(BaseModel):
+    nombre: str
+    hora_inicio: time
+    hora_fin: time
+    
+    @field_validator('hora_fin')
+    @classmethod
+    def validar_horas(cls, v, info):
+        if 'hora_inicio' in info.data:
+            if info.data['hora_inicio'] >= v:
+                raise ValueError('hora_fin debe ser después de hora_inicio')
+        return v
+```
 
-| ID | Funcionalidad | Descripción | Datos de Entrada (JSON) | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A21 | Crear historial médico | POST /api/v1/historiales-medicos/ | `{"talla": 1.80, "peso": 75, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna"}` | `{"success": true, "message": "Historial creado", "data": {"id": 1, "external_id": "880e8400-e29b-41d4-a716-446655440003", "talla": 1.80, "peso": 75, "imc": 23.15, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna", "auth_user_id": 10, "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` (Status 201) | Usuario ATLETA autenticado, sin historial previo | Exitoso |
-| TC-A22 | Validar IMC calculado | POST /api/v1/historiales-medicos/ | `{"talla": 1.80, "peso": 75, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna"}` | IMC retornado: 23.15 (75/(1.80^2)) en `{"id": 1, "imc": 23.15, "talla": 1.80, "peso": 75, ...}` | | Exitoso |
-| TC-A23 | Ver historial médico | GET /api/v1/historiales-medicos/me | Header: Authorization Bearer token | `{"success": true, "data": {"id": 1, "external_id": "880e8400-e29b-41d4-a716-446655440003", "talla": 1.80, "peso": 75, "imc": 23.15, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna", "auth_user_id": 10, "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` (Status 200) | Usuario autenticado con historial médico | Exitoso |
-| TC-A24 | Actualizar historial | PUT /api/v1/historiales-medicos/{external_id} | `{"peso": 80}` | `{"success": true, "data": {"id": 1, "external_id": "880e8400-e29b-41d4-a716-446655440003", "talla": 1.80, "peso": 80, "imc": 24.69, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna", "auth_user_id": 10, "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T11:45:00"}, "errors": null}` (Status 200) | Historial médico existe | Exitoso |
-| TC-A25 | Validar dato duplicado | POST /api/v1/historiales-medicos/ | `{"talla": 1.80, "peso": 75, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna"}` | `{"success": false, "message": "El usuario ya tiene historial médico", "errors": null}` (Status 400) | Historial médico ya existe | Fallido |
-| TC-A26 | Usuario no es ATLETA | POST /api/v1/historiales-medicos/ | `{"talla": 1.80, "peso": 75, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna"}` (Usuario ENTRENADOR) | `{"success": false, "message": "El usuario no existe o no es ATLETA", "errors": null}` (Status 400) | Usuario autenticado sin rol ATLETA | Fallido |
-| TC-A27 | Historial no encontrado | GET /api/v1/historiales-medicos/me | Usuario sin historial médico | `{"success": false, "message": "Historial no encontrado", "errors": null}` (Status 404) | Usuario autenticado sin historial médico | Fallido |
-| TC-A28 | Listar historiales | GET /api/v1/historiales-medicos/?skip=0&limit=100 | skip: 0, limit: 100 | `{"success": true, "data": [{"id": 1, "external_id": "880e8400-e29b-41d4-a716-446655440003", "talla": 1.80, "peso": 75, "imc": 23.15, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna", "auth_user_id": 10, "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, {"id": 2, "external_id": "990e8400-e29b-41d4-a716-446655440004", "talla": 1.75, "peso": 68, "imc": 22.20, "alergias": "Leche", "enfermedades_hereditarias": "Hipertensión", "enfermedades": "Ninguna", "auth_user_id": 11, "created_at": "2025-01-20T14:20:00", "updated_at": "2025-01-20T14:20:00"}], "errors": null}` (Status 200) | | Exitoso |
-| TC-A29 | Ver historial por ID | GET /api/v1/historiales-medicos/{external_id} | external_id: 880e8400-e29b-41d4-a716-446655440003 | `{"success": true, "data": {"id": 1, "external_id": "880e8400-e29b-41d4-a716-446655440003", "talla": 1.80, "peso": 75, "imc": 23.15, "alergias": "Ninguna", "enfermedades_hereditarias": "Ninguna", "enfermedades": "Ninguna", "auth_user_id": 10, "created_at": "2025-01-21T10:30:00", "updated_at": "2025-01-21T10:30:00"}, "errors": null}` (Status 200) | Historial existe | Exitoso |
+---
 
-## FRONTEND - HISTORIAL DE COMPETENCIAS
+### 📋 MÓDULO: Asistencia (1 Defecto)
+**Descripción Genérica:** Similar al módulo HistorialMédico - AsyncMock mal configurado.
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A30 | Ver historial de competencias | Atleta visualiza su historial de participaciones | Click en "Mis Competencias" | Tabla con todas las competencias del atleta | Usuario atleta autenticado | |
-| TC-A31 | Ver competencia específica | Detalles de una competencia | Click en competencia específica | Muestra: fecha, prueba, resultado, posición final | Historial con competencias | |
-| TC-A32 | Filtrar competencias | Filtrar por año o disciplina | Año: 2025 | Muestra solo competencias del 2025 | | |
-| TC-A33 | Historial vacío | Atleta sin competencias | Sin participaciones registradas | Mensaje: "No hay competencias registradas" | Atleta nuevo | |
+**Problemas Identificados:**
+1. ❌ `mock_registro_asistencias_repository.create.return_value` retorna corrutina
+2. ❌ Falta AsyncMock apropiado
 
-## BACKEND - HISTORIAL DE COMPETENCIAS
+---
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A30 | Ver historial de competencias | GET /api/v1/atletas/historial | Header: Authorization Bearer token | `{"success": true, "data": [{"competencia_id": 1, "fecha": "2025-01-15", "prueba_id": 5, "resultado_id": 101, "puesto_obtenido": 2, "posicion_final": "segundo", "valor_resultado": 12.45, "timestamp": "2025-01-15T14:30:00"}, {"competencia_id": 2, "fecha": "2025-01-08", "prueba_id": 6, "resultado_id": 102, "puesto_obtenido": 1, "posicion_final": "primero", "valor_resultado": 11.95, "timestamp": "2025-01-08T16:00:00"}], "errors": null}` (Status 200) | Usuario autenticado con competencias | Exitoso |
-| TC-A31 | Historial vacío | GET /api/v1/atletas/historial | Usuario sin competencias | `{"success": true, "data": [], "errors": null}` (Status 200) | Usuario nuevo | Exitoso |
-| TC-A32 | Usuario no autenticado | GET /api/v1/atletas/historial | Sin token | `{"success": false, "message": "No autorizado", "errors": null}` (Status 401) | | Fallido |
+## PLAN DE ARREGLO
 
-## FRONTEND - ESTADÍSTICAS Y DASHBOARD
+### Fase 1: Correcciones Críticas (Mocking)
+- [ ] **BUG-HM-01 a BUG-HM-10:** Reemplazar lambdas con MagicMock correctos
+- [ ] **BUG-AS-01:** Aplicar mismo patrón de mocking
+- **Prioridad:** ALTA | **Impacto:** 9 defectos
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A34 | Ver estadísticas | Visualizar resumen de estadísticas | Click en "Mis Estadísticas" | Muestra: Total de competencias, Medallas (oro, plata, bronce), Años de experiencia | Usuario atleta autenticado | |
-| TC-A35 | Resumen de medallas | Contar medallas por tipo | Participación en 3 competencias | Oro: 1, Plata: 1, Bronce: 1 | Competencias con resultados | |
-| TC-A36 | Experiencia mostrada | Mostrar años de experiencia | Años: 5 | Panel muestra "5 años de experiencia" | | |
-| TC-A37 | Estadísticas vacías | Usuario sin competencias | Sin participaciones | Muestra: Total: 0, Medallas: 0/0/0, Experiencia: X años | Atleta nuevo | |
+### Fase 2: Importaciones Faltantes
+- [ ] **BUG-EN-01 a BUG-EN-03:** Agregar imports de schemas/modelos
+- **Prioridad:** MEDIA | **Impacto:** 3 defectos
 
-## BACKEND - ESTADÍSTICAS Y DASHBOARD
+### Fase 3: Validaciones en Schema
+- [ ] **BUG-HR-01:** Agregar validador Pydantic para horas
+- **Prioridad:** MEDIA | **Impacto:** 1 defecto
 
-| ID | Funcionalidad | Descripción | Datos de Entrada | Salida Esperada (JSON) | Condiciones Previas | Resultado (Exitoso/Fallido) |
-|---|---|---|---|---|---|---|
-| TC-A34 | Ver estadísticas | GET /api/v1/atletas/estadisticas | Header: Authorization Bearer token | `{"success": true, "data": {"total_competencias": 3, "medallas": {"oro": 1, "plata": 1, "bronce": 1}, "experiencia": 5}, "errors": null}` (Status 200) | Usuario autenticado con competencias | Exitoso |
-| TC-A35 | Estadísticas vacías | GET /api/v1/atletas/estadisticas | Usuario sin competencias | `{"success": true, "data": {"total_competencias": 0, "medallas": {"oro": 0, "plata": 0, "bronce": 0}, "experiencia": 0}, "errors": null}` (Status 200) | Atleta nuevo | Exitoso |
-| TC-A36 | Usuario no autenticado | GET /api/v1/atletas/estadisticas | Sin token | `{"success": false, "message": "No autorizado", "errors": null}` (Status 401) | | Fallido |
-| TC-A37 | Sin perfil de atleta | GET /api/v1/atletas/estadisticas | Usuario no atleta | `{"success": false, "message": "No tienes perfil de atleta", "errors": null}` (Status 404) | Usuario autenticado sin perfil atleta | Fallido |
+---
+
+## EVIDENCIA TÉCNICA
+
+### Error Common Pattern (HistorialMédico)
+```
+AttributeError: 'coroutine' object has no attribute 'scalar_one_or_none'
+  File "tests/modules/atleta/services/test_historial_medico_service.py", line XX
+    result = await historial_service.create(data, user_id=10)
+  
+Causa: mock_db.execute() retorna corrutina en lugar de resultado evaluable
+```
+
+### Error Common Pattern (Entrenamiento)
+```
+NameError: name 'HorarioCreateNested' is not defined
+  File "tests/modules/entrenador/services/test_entrenamiento_service.py", line XX
+    horarios=[]
+    
+Causa: Schema no está importado en el archivo de test
+```
+
+---
+
+## RECOMENDACIONES
+
+1. **Usar contexto manager para mocks:** 
+   ```python
+   with patch('app.modules.atleta.services.historial_medico_service.HistorialMedicoService') as mock:
+       # Más seguro y limpio
+   ```
+
+2. **Considerar fixtures compartidas:**
+   ```python
+   # conftest.py
+   @pytest.fixture
+   def mock_async_db():
+       db = AsyncMock()
+       # Configuración estándar
+       return db
+   ```
+
+3. **Validar imports en el inicio de cada test file:**
+   ```python
+   # Al inicio del archivo
+   try:
+       from app.modules.entrenador.domain.schemas.entrenamiento_schema import HorarioCreateNested
+   except ImportError as e:
+       pytest.skip(f"Importación faltante: {e}")
+   ```
+
+---
+
+## HISTORIAL DE CAMBIOS
+
+| Fecha | Versión | Cambio | Autor |
+|---|---|---|---|
+| 2026-01-21 | 1.0 | Creación de matriz inicial | Sistema Automático |
+
+---
+
+**Última Actualización:** 2026-01-21 | **Estado:** En Evaluación
