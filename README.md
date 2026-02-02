@@ -2,7 +2,7 @@
 title: "Casos de Uso - Grupo 1 (Detallado)"
 format: html
 ---
-## CU-001: Inicio de sesión
+## CU-001: Inicio de sesiónnnnnnnnnnnnnnnn
 | Campo | Descripción |
 |---|---|
 | **Identificador** | CU-001 |
