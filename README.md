@@ -3,8 +3,8 @@ title: "Casos de Uso - Grupo 3"
 format: html
 ---
 ## CU-010: Consulta de Historial Médico del Atleta
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-010 |
 | **Nombre** | Consulta de Historial Médico del Atleta |
 | **Descripción** | Permite al entrenador acceder a la información médica confidencial de un atleta específico. |
@@ -28,8 +28,8 @@ format: html
 | 1 | Error de conexión (Backend caído). | Toast Error: "Error al obtener el historial médico". |
 ---
 ## CU-011: Registro de baremos
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-011 |
 | **Nombre** | Registro de baremos |
 | **Descripción** | Permite crear nuevos esquemas de puntuación (Baremos) asociados a una prueba, definiendo rangos de edad, sexo y clasificación. |
@@ -56,8 +56,8 @@ format: html
 | 1 | Error del servidor al guardar. | El sistema no confirma la creación y mantiene el modal abierto (o cierra sin éxito dependiendo del catch). |
 ---
 ## CU-012: Modificación de baremos
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-012 |
 | **Nombre** | Modificación de baremos |
 | **Descripción** | Permite editar los parámetros de un baremo existente, incluyendo sus rangos y reglas. |
@@ -82,8 +82,8 @@ format: html
 | 1 | Baremo no encontrado (concurrencia). | Error de API (posiblemente atrapado en consola). |
 ---
 ## CU-013: Listado de baremos
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-013 |
 | **Nombre** | Listado de baremos |
 | **Descripción** | Visualización tabular de los baremos registrados incluyendo prueba asociada, contexto (sexo/edad) y estado. |
@@ -107,8 +107,8 @@ format: html
 | 1 | Fallo de red. | Se queda en estado de carga o muestra tabla vacía (error logueado en consola). |
 ---
 ## CU-014: Búsqueda de baremos
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-014 |
 | **Nombre** | Búsqueda de baremos |
 | **Descripción** | Permite localizar baremos específicos. |
@@ -131,8 +131,8 @@ format: html
 | 1 | N/A | N/A |
 ---
 ## CU-015: Activar/desactivar baremos
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-015 |
 | **Nombre** | Activar/desactivar baremos |
 | **Descripción** | Cambio lógico del estado de un baremo para habilitarlo o inhabilitarlo sin eliminarlo. |
