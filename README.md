@@ -1,149 +1,110 @@
 ---
-title: "Casos de Uso - Grupo 1 (Detallado)"
+title: "Casos de Uso - Grupo 2"
 format: html
 ---
-## CU-001: Inicio de sesión
+## CU-006: Búsqueda de usuarios
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-001 |
-| **Nombre** | Inicio de sesión |
-| **Descripción** | Permite a los usuarios autenticarse para acceder al dashboard correspondiente a su rol. |
-| **Actores** | Usuario (Administrador, Entrenador, Pasante, Atleta) |
-| **Pre condiciones** | El usuario debe estar registrado. |
-| **Post Condiciones** | Redirección al Dashboard (`/dashboard`) y generación de token de sesión. |
-| **Referencia a requisitos** | RF-001 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Ingresa correo y contraseña y pulsa "Iniciar Sesión". | Valida formato de correo y que la contraseña no esté vacía. |
-| 2 | | Envía credenciales al servicio de autenticación (`authService.login`). |
-| 3 | | Muestra notificación tipo Toast: "Inicio de sesión exitoso". |
-| 4 | | Redirige automáticamente a la ruta `/dashboard`. |
-**Flujo alterno:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Usuario tiene 2FA activado. | Backend devuelve `temp_token`. Sistema muestra modal `TwoFactorLoginModal`. |
-| 1.1 | Ingresa código 2FA. | Muestra Toast: "Verificación de 2 pasos completa" y redirige. |
-| 2 | Usuario está en estado "Inactivo". | Error 403/401 específico. Sistema abre modal `VerificationModal` para reenviar correo. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Email formato inválido (sin @). | Validación HTML5 nativa o mensaje de error visual en campo. |
-| 2 | Credenciales incorrectas. | Muestra Toast Error: "Error al iniciar sesión. Por favor verifica tus credenciales". |
-| 3 | Usuario inactivo. | Muestra modal de verificación de cuenta. |
-| 4 | Error de servidor. | Muestra Toast Error: Detalle del error o "Error desconocido". |
----
-## CU-002: Cambio de roles de usuarios
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-002 |
-| **Nombre** | Cambio de roles de usuarios |
-| **Descripción** | Permite al administrador modificar el rol de un usuario existente (ADMINISTRADOR, ENTRENADOR, ATLETA, REPRESENTANTE). |
+| **Identificador** | CU-006 |
+| **Nombre** | Búsqueda de usuarios |
+| **Descripción** | Permite al administrador localizar usuarios específicos mediante filtros de texto. |
 | **Actores** | Administrador |
-| **Pre condiciones** | Usuario debe existir en la lista. |
-| **Post Condiciones** | El rol del usuario se actualiza en base de datos y en la interfaz. |
-| **Referencia a requisitos** | RF-002 |
+| **Pre condiciones** | El administrador debe haber iniciado sesión y encontrarse en el módulo de Gestión de Roles/Usuarios. |
+| **Post Condiciones** | La lista de usuarios se filtra mostrando solo las coincidencias. |
+| **Referencia a requisitos** | RF-006 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | En la tabla de usuarios, pulsa botón "Cambiar Rol". | Muestra alerta modal (SweetAlert) con selector de roles. |
-| 2 | Selecciona un nuevo rol del desplegable y pulsa "Actualizar". | Verifica que el rol seleccionado sea diferente y no vacío. |
-| 3 | | Envía petición de actualización (`adminRepository.updateUserRole`). |
-| 4 | | Muestra Toast Success: "Rol actualizado exitosamente". |
-| 5 | | Recarga la lista de usuarios para reflejar el cambio. |
+| 1 | Selecciona la barra de búsqueda. | Habilita el cursor en el campo de texto. |
+| 2 | Escribe un criterio (Ej: nombre o email). | Filtra la tabla en tiempo real (o al presionar Enter) buscando coincidencias parciales en **Nombre de Usuario** o **Correo Electrónico**. |
+| 3 | | Muestra los resultados coincidentes en la tabla. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Pulsa "Cancelar" en el modal. | Cierra el modal sin realizar cambios. |
-| 2 | Selecciona el mismo rol que ya tenía. | El sistema no realiza ninguna petición al servidor. |
+| 1 | Escribe un criterio que no coincide con ningún usuario. | Muestra la tabla vacía o un mensaje "No hay usuarios para mostrar". |
+| 2 | Borra el texto de búsqueda. | Restaura la lista completa de usuarios originales. |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Error de red al actualizar. | Muestra Toast Error: "Error al actualizar rol". |
-| 2 | Intenta guardar sin seleccionar rol. | El validador del modal muestra: "Debes seleccionar un rol". |
+| 1 | Caracteres inválidos en búsqueda. | El sistema los ignora o filtra literalmente sin encontrar resultados. |
 ---
-## CU-003: Registro de usuarios
+## CU-007: Activar/desactivar usuario
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-003 |
-| **Nombre** | Registro de usuarios |
-| **Descripción** | Registro de nuevos usuarios con validación exhaustiva de datos personales y de cuenta. |
-| **Actores** | Administrador / Usuario Invitado |
-| **Pre condiciones** | N/A |
-| **Post Condiciones** | Usuario creado en estado pendiente de verificación (o activo según config). Redirección a Login. |
-| **Referencia a requisitos** | RF-003 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Completa form: Nombre, Apellido, ID, Teléfono, Dirección, Usuario, Email, Clave. | Valida formatos en tiempo real (regex para nombres, longitud de ID). |
-| 2 | Pulsa "Registrarse". | Verifica coincidencia de contraseñas y campos obligatorios (`validateFormOnSubmit`). |
-| 3 | | Envía datos a `authService.register` (excluyendo confirmPassword). |
-| 4 | | Muestra Toast Success: "Usuario registrado exitosamente...". |
-| 5 | | Redirige a la pantalla de Inicio de Sesión (`/login`). |
-**Flujo alterno:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Selecciona "Tipo ID: RUT" (13 dígitos). | Valida longitud exacta de 13 dígitos numéricos. |
-| 2 | Ingresa teléfono con caracteres texto. | Elimina caracteres no numéricos automáticamente o muestra error. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Nombre/Apellido < 2 chars. | Borde rojo en input y texto: "El nombre debe tener al menos 2 caracteres". |
-| 2 | Cédula longitud incorrecta (≠10). | "La cédula debe tener exactamente 10 caracteres numéricos". |
-| 3 | Contraseña débil. | "Debe contener mayúscula, minúscula, número y especial". |
-| 4 | Email / Usuario ya existe. | Toast Error desde backend: "El correo ya está en uso" (o mensaje del API). |
-| 5 | Rate Limit (muchos intentos). | Toast Error: "Demasiados intentos. Por favor, espera...". |
----
-## CU-004: Modificación de datos de usuarios
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-004 |
-| **Nombre** | Modificación de datos de usuarios |
-| **Descripción** | Edición de perfil de usuario incluyendo nombre de usuario, email, estado activo/inactivo e imagen. |
+| **Identificador** | CU-007 |
+| **Nombre** | Activar/desactivar usuario |
+| **Descripción** | Permite dar de baja o reactivar el acceso de un usuario al sistema mediante el cambio de su estado. |
 | **Actores** | Administrador |
-| **Pre condiciones** | Usuario seleccionado para editar. |
-| **Post Condiciones** | Datos actualizados. |
-| **Referencia a requisitos** | RF-004 |
+| **Pre condiciones** | El usuario a modificar debe existir. |
+| **Post Condiciones** | El estado del usuario cambia (Activo <-> Inactivo). Usuario inactivo no puede loguearse. |
+| **Referencia a requisitos** | RF-007 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Pulsa "Editar" en un usuario. | Abre modal `EditUserModal` con datos precargados. |
-| 2 | Modifica Email y cambia estado a "Inactivo". | Valida formato de email. Actualiza estado visual del botón (Rojo/Verde). |
-| 3 | Pulsa "Guardar". | Envía petición `authService.updateUser`. |
-| 4 | | Si cambió el rol, envía petición adicional `updateRole`. |
-| 5 | | Cierra modal y actualiza la vista padre (`onUpdated`). |
+| 1 | Accede a la edición del usuario (botón Editar). | Abre el modal `EditUserModal`. |
+| 2 | Hace clic en el botón de "Estado del usuario" (Toggle). | Cambia visualmente el indicador: Verde (Activo) <-> Rojo (Inactivo). Texto cambia a "Activo"/"Inactivo". |
+| 3 | Presiona "Guardar". | Envía la actualización al backend (`is_active: true/false`). |
+| 4 | | Cierra el modal y actualiza el indicador de estado en la tabla lista de usuarios. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Pulsa botón de "Estado". | Alterna visualmente entre "Activo" (Verde) e "Inactivo" (Rojo). |
+| 1 | Desactiva su propio usuario (Admin). | El sistema podría permitirlo (riesgo) o bloquearlo según backend. (En UI actual: permite enviar la petición). |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Falla en actualización. | Muestra `alert("Hubo un error al actualizar el usuario.")`. |
+| 1 | Error de persistencia. | Alert: "Hubo un error al actualizar el usuario". Estado no cambia. |
 ---
-## CU-005: Listado de usuarios
+## CU-008: Registro de Atletas
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-005 |
-| **Nombre** | Listado de usuarios |
-| **Descripción** | Visualización paginada y filtrable de todos los usuarios registrados en el sistema. |
-| **Actores** | Administrador |
-| **Pre condiciones** | Login como Admin. |
-| **Post Condiciones** | Tabla cargada con datos. |
-| **Referencia a requisitos** | RF-005 |
+| **Identificador** | CU-008 |
+| **Nombre** | Registro de Atletas |
+| **Descripción** | Registro de nuevos usuarios con el rol de "Atleta", capturando información personal e institucional. |
+| **Actores** | Atleta (Usuario externo/institucional) |
+| **Pre condiciones** | No estar autenticado. |
+| **Post Condiciones** | Cuenta creada con rol ATLETA. |
+| **Referencia a requisitos** | RF-008 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Ingresa a "Gestión de Usuarios". | Muestra skeleton loader ("Cargando usuarios..."). |
-| 2 | | Realiza petición `adminRepository.listUsers(page, size)`. |
-| 3 | | Renderiza tabla con: ID, Username, Email, Rol (Badge de color), Estado. |
-| 4 | Cambia filtro de Rol. | Recarga la tabla filtrando por el rol seleccionado. |
+| 1 | Ingresa a la opción "Regístrate aquí". | Muestra formulario de registro (`RegisterPage`). |
+| 2 | Completa Datos Personales: Nombre, Apellido, Fecha Nacimiento, Sexo, ID, Teléfono, Dirección. | Valida formatos (longitud, numérico). |
+| 3 | Completa Datos de Cuenta: Selecciona Estamento, Rol "Atleta", Usuario, Email, Clave. | Valida unicidad de usuario/email en backend al enviar. |
+| 4 | Presiona "Registrarse". | Crea la cuenta. Muestra "Usuario registrado exitosamente". |
+| 5 | | Redirige al Login. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | No hay usuarios en la base de datos. | Muestra icono de Usuarios vacío y texto "No hay usuarios registrados". |
-| 2 | Navega a siguiente página. | Carga siguiente lote de usuarios (Paginación). |
+| 1 | Selecciona Rol diferente a Atleta (si está disponible). | El sistema crea el usuario con el rol seleccionado (Representante, etc.). |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Error de conexión al cargar. | Toast Error: "Error al cargar usuarios". Lista vacía. |
+| 1 | Faltan datos obligatorios. | Impide envío. Muestra mensajes de "Campo requerido" bajo cada input. |
+| 2 | Fecha de nacimiento inválida. | Muestra error de validación HTML5. |
+| 3 | Nota sobre datos físicos. | *Nota técnica: Los campos Peso, Talla y Experiencia descritos en el requisito no se solicitan en el formulario de registro actual del sistema.* |
+---
+## CU-009: Consulta de Historial Deportivo Propio
+| Campo | Descripción |---|
+|---|---|---|
+| **Identificador** | CU-009 |
+| **Nombre** | Consulta de Historial Deportivo Propio |
+| **Descripción** | Permite al atleta visualizar sus estadísticas acumuladas y el desglose de resultados en competencias pasadas. |
+| **Actores** | Atleta |
+| **Pre condiciones** | Atleta autenticado en el sistema. |
+| **Post Condiciones** | Visualización de datos actualizados. |
+| **Referencia a requisitos** | RF-009 |
+**Flujo normal de eventos:**
+| # | Actor (Acción) | Sistema (Reacción) |
+|---|---|---|
+| 1 | Accede al Dashboard (`/dashboard/atleta`). | Carga datos vía `AtletaService.getEstadisticas()` y `getHistorial()`. |
+| 2 | | Muestra tarjetas con conteo de Medallas (Oro/Plata/Bronce), Total Competencias, Años Experiencia y % Rendimiento. |
+| 3 | Desplaza hacia abajo a "Historial de Competencias". | Muestra tabla con: Fecha, Competencia, Prueba, Resultado (Valor + Unidad), Posición (Badge) y Estado. |
+**Flujo alterno:**
+| # | Actor (Acción) | Sistema (Reacción) |
+|---|---|---|
+| 1 | No tiene historial registrado. | Muestra las tarjetas estadísticas en 0 y el mensaje "No hay resultados registrados aún" en la tabla. |
+| 2 | Visualiza eventos futuros. | Muestra sección "Próximos Eventos" (actualmente con mensaje de "Próximamente"). |
+**Errores:**
+| # | Error | Sistema (Mensaje/Acción) |
+|---|---|---|
+| 1 | Fallo al cargar datos. | Toast Error: "Error al cargar los datos del dashboard". Spinner desaparece, datos se muestran vacíos o incompletos. |
