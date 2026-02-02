@@ -1,6 +1,6 @@
 ## CU-005: Listado de usuarios
-| Campo | Descripción |
-|---|---|
+| Campo | Descripción |---|
+|---|---|---|
 | **Identificador** | CU-005 |
 | **Nombre** | Listado de usuarios |
 | **Descripción** | Visualización paginada y filtrable de todos los usuarios registrados en el sistema. |
