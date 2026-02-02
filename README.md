@@ -1,235 +1,100 @@
----
-title: "Casos de Uso - Grupo 5"
-format: html
----
-## CU-026: Búsqueda de pruebas
+## CU-036: Modificación de baremos específicos
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-026 |
-| **Nombre** | Búsqueda de pruebas |
-| **Descripción** | Permite al entrenador localizar pruebas específicas por nombre o baremo asociado. |
+| **Identificador** | CU-036 |
+| **Nombre** | Modificación de baremos específicos |
+| **Descripción** | Permite al entrenador editar los rangos, valores y clasificaciones de un baremo específico asignado a una prueba. |
 | **Actores** | Entrenador |
-| **Pre condiciones** | Listado de pruebas cargado. |
-| **Post Condiciones** | Prueba localizada. |
-| **Referencia a requisitos** | RF-026 |
+| **Pre condiciones** | El baremo específico debe existir y estar registrado en el sistema. |
+| **Post Condiciones** | Los datos del baremo quedan actualizados en la base de datos. |
+| **Referencia a requisitos** | RF-036 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Ingresa al módulo "Gestión de Pruebas". | Muestra el listado de todas las pruebas configuradas. |
-| 2 | (Nota: Funcionalidad de búsqueda no implementada en UI actual). El usuario navega visualmente por la lista. | El sistema mantiene el ordenamiento por defecto (generalmente fecha de carga). |
+| 1 | En el listado de baremos, identifica el registro a modificar y presiona el botón "Editar" (icono de lápiz). | El sistema abre el modal de edición (`BaremoModal`) cargando la información actual del baremo (Prueba asociada, rangos de marcas, clasificaciones). |
+| 2 | Modifica los campos deseados (Ej. ajusta el rango máximo de una categoría o cambia la etiqueta de clasificación). | El sistema valida instantáneamente el formato de los datos ingresados en el formulario. |
+| 3 | Presiona el botón "Guardar Cambios". | El sistema muestra una alerta de confirmación. |
+| 4 | Confirma la operación. | El sistema envía la petición de actualización al servidor (`baremoService.update`). |
+| 5 | | Al recibir respuesta exitosa, el sistema cierra el modal, muestra un mensaje de "Éxito" y actualiza la tabla con los nuevos datos. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Utiliza la función de búsqueda de texto del navegador (Ctrl+F). | El navegador resalta las coincidencias (Ej. "100m", "Fuerza"). |
+| 1 | Decide cancelar la modificación y presiona "Cancelar" o cierra el modal. | El sistema descarta los cambios no guardados y cierra la ventana modal. |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | La prueba no existe en la página actual. | El usuario no encuentra el ítem (Limitación de paginación/filtrado). |
+| 1 | Intenta guardar rangos incoherentes (Mín > Máx). | El sistema muestra un mensaje de validación "El valor mínimo no puede ser mayor al máximo" y no permite guardar. |
+| 2 | Error de servidor (500). | El sistema muestra una alerta indicando "Error al actualizar el baremo" y mantiene los datos previos. |
 ---
-## CU-027: Activar/desactivar pruebas
+## CU-037: Listado de baremos específicos
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-027 |
-| **Nombre** | Activar/desactivar pruebas |
-| **Descripción** | Permite cambiar el estado de disponibilidad de una prueba. |
+| **Identificador** | CU-037 |
+| **Nombre** | Listado de baremos específicos |
+| **Descripción** | Muestra una vista tabular de todos los baremos específicos configurados, detallando su clasificación y rangos. |
 | **Actores** | Entrenador |
-| **Pre condiciones** | Prueba existente. |
-| **Post Condiciones** | Estado actualizado (Activo/Inactivo). |
-| **Referencia a requisitos** | RF-027 |
+| **Pre condiciones** | Acceso al módulo de Baremos. |
+| **Post Condiciones** | N/A |
+| **Referencia a requisitos** | RF-037 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Presiona el botón de estado (Check/Block) en la fila de la prueba. | Muestra alerta de confirmación (SweetAlert): "¿Desea activar/desactivar la prueba...?". |
-| 2 | Confirma la acción. | Envía petición al servidor (`pruebaService.update`). |
-| 3 | | Actualiza el icono y el estilo de la fila inmediatamente. Muestra mensaje de éxito. |
+| 1 | Ingresa a la sección "Baremos". | El sistema realiza una petición (`GET`) para obtener todos los baremos registrados. |
+| 2 | | El sistema renderiza una tabla mostrando: Nombre de la Prueba, Contexto (Sexo/Edad), Clasificación (A/B/C...), Rango Máximo/Mínimo y Estado. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Cancela la confirmación. | Cierra la alerta sin realizar cambios. |
+| 1 | No existen baremos registrados en la base de datos. | El sistema muestra un estado vacío con el mensaje "No hay baremos registrados". |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Error de conexión o servidor. | Muestra alerta de error y revierte (o no aplica) el cambio visual. |
+| 1 | Fallo de conexión o tiempo de espera agotado. | El sistema muestra un indicador de carga indefinido o un mensaje de error "No se pudieron cargar los datos". |
 ---
-## CU-028: Generación de reportes individuales y globales
+## CU-038: Búsqueda de baremos específicos
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-028 |
-| **Nombre** | Generación de reportes individuales y globales |
-| **Descripción** | Exportación de datos estadísticos y operativos a formatos portables (PDF/Excel). |
+| **Identificador** | CU-038 |
+| **Nombre** | Búsqueda de baremos específicos |
+| **Descripción** | Permite filtrar el listado de baremos por nombre de prueba o identificador del baremo. |
 | **Actores** | Entrenador |
-| **Pre condiciones** | Acceso a módulos de Asistencia o Rendimiento con datos. |
-| **Post Condiciones** | Archivo descargado. |
-| **Referencia a requisitos** | RF-028 |
+| **Pre condiciones** | Listado de baremos con datos cargados. |
+| **Post Condiciones** | Listado filtrado según criterio. |
+| **Referencia a requisitos** | RF-038 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | En "Gestión de Asistencia" o "Reportes", presiona "Exportar Reporte" (Botón visual). | (Implementación pendiente en JS: Debería generar el blob del archivo). |
-| 2 | | Inicia la descarga del archivo generado. |
+| 1 | Introduce el nombre de una prueba (Ej. "100m") en la barra de búsqueda superior. | El sistema filtra dinámicamente las filas de la tabla en tiempo real. |
+| 2 | | El sistema muestra únicamente los baremos cuya prueba asociada o nombre coincida con el texto ingresado. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | No hay datos para exportar. | El sistema genera un reporte vacío o muestra alerta "Sin datos". |
+| 1 | Borra el texto de búsqueda. | El sistema restaura el listado completo original. |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Fallo en la generación del PDF. | El botón no responde o muestra error en consola. |
+| 1 | No se encuentran coincidencias. | El sistema muestra la tabla vacía con un mensaje "No se encontraron resultados para su búsqueda". |
 ---
-## CU-029: Filtro de atletas por categoría, género y rendimiento
+## CU-039: Activar/desactivar baremos específicos
 | Campo | Descripción |---|
 |---|---|---|
-| **Identificador** | CU-029 |
-| **Nombre** | Filtro de atletas |
-| **Descripción** | Búsqueda segmentada de atletas en el directorio. |
+| **Identificador** | CU-039 |
+| **Nombre** | Activar/desactivar baremos específicos |
+| **Descripción** | Permite habilitar o inhabilitar un baremo específico sin eliminarlo del sistema, controlando su disponibilidad para pruebas. |
 | **Actores** | Entrenador |
-| **Pre condiciones** | Listado de atletas cargado. |
-| **Post Condiciones** | Lista filtrada mostrada. |
-| **Referencia a requisitos** | RF-029 |
+| **Pre condiciones** | Baremo existente. |
+| **Post Condiciones** | Estado del baremo modificado (True/False). |
+| **Referencia a requisitos** | RF-039 |
 **Flujo normal de eventos:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Ingresa a "Atletas". Usa los controles de filtro (Categoría, Género). | (Implementación actual en `AthletesTable` usa barra de búsqueda general y pestañas/filtros básicos). Filtra la tabla dinámicamente. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Ningún atleta cumple los criterios. | Muestra tabla vacía o mensaje "No se encontraron atletas". |
----
-## CU-030: Registro de asistencia a entrenamientos
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-030 |
-| **Nombre** | Registro de asistencia a entrenamientos |
-| **Descripción** | Control de presencia de atletas en una sesión específica. |
-| **Actores** | Entrenador |
-| **Pre condiciones** | Entrenamiento y Horario creados. Atletas inscritos. |
-| **Post Condiciones** | Asistencia registrada (Presente/Ausente). |
-| **Referencia a requisitos** | RF-030 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Ingresa a la sesión (`GestionAsistenciaPage`). | Muestra lista de inscritos con su estado actual. |
-| 2 | Localiza un atleta con estado "Ausente" (Rojo) y presiona "Asistió" (Verde). | Envía petición (`AsistenciaService.marcarPresente` o `registrarAsistencia`). |
-| 3 | | Actualiza la etiqueta a "Presente" (Verde) y recalcula contadores de asistencia. |
+| 1 | Presiona el botón de acción "Activar" (Check) o "Desactivar" (Bloqueo) en la fila del baremo deseado. | El sistema muestra una ventana de confirmación "¿Desea cambiar el estado del baremo?". |
+| 2 | Confirma la acción seleccionando "Sí". | El sistema envía la petición de actualización al servidor. |
+| 3 | | El sistema actualiza el indicador visual de estado ( Verde = Activo, Rojo = Inactivo) y emite una notificación de éxito. |
 **Flujo alterno:**
 | # | Actor (Acción) | Sistema (Reacción) |
 |---|---|---|
-| 1 | Marca "Ausente" a un atleta que estaba "Presente". | El sistema actualiza el estado a Ausente. |
-| 2 | Inscribe un nuevo atleta manualmente ("Inscribir Atleta"). | Abre modal, selecciona atleta, guarda y actualiza la lista. |
-| 3 | Intenta marcar presente a un atleta que "No Asistirá" (Confirmado por atleta). | El botón está deshabilitado (lógica de negocio). |
+| 1 | Rechaza la confirmación. | El sistema cancela la operación y no modifica el estado del registro. |
 **Errores:**
 | # | Error | Sistema (Mensaje/Acción) |
 |---|---|---|
-| 1 | Error al registrar asistencia. | Notificación Toast Error: "Error al marcar como presente". |
----
-## CU-031: Registro de competencias y resultados
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-031 |
-| **Nombre** | Registro de competencias y resultados |
-| **Descripción** | Creación de eventos competitivos y carga de marcas oficiales. |
-| **Actores** | Entrenador |
-| **Pre condiciones** | N/A |
-| **Post Condiciones** | Competencia o Resultado creados. |
-| **Referencia a requisitos** | RF-031 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | (Competencia) En "Gestión de Competencias", presiona "Crear Nueva Competencia". | Abre formulario (Nombre, Fecha, Lugar, Estado). |
-| 2 | Completa y Guarda. | Crea competencia y actualiza lista. |
-| 3 | (Resultado) En "Registro de Resultados", presiona "Registrar Resultado". | Abre formulario. |
-| 4 | Selecciona Competencia, Atleta, Prueba, ingresa Marca, Posición. | Valida tipos de datos. |
-| 5 | Guarda. | Registra resultado oficial vinculado. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Faltan campos obligatorios. | Muestra errores de validación en el formulario. |
----
-## CU-032: Modificación de competencias y resultados
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-032 |
-| **Nombre** | Modificación de competencias y resultados |
-| **Descripción** | Edición de datos de eventos o marcas erróneas. |
-| **Actores** | Entrenador |
-| **Pre condiciones** | Registro existente. |
-| **Post Condiciones** | Datos corregidos. |
-| **Referencia a requisitos** | RF-032 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Presiona "Editar" en la tabla correspondiente. | Abre modal con datos precargados. |
-| 2 | Realiza cambios (Ej. corrige fecha o marca). | |
-| 3 | Guarda. | Envía actualización y refresca la vista. |
-**Flujo alterno:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Cancela cambios. | Cierra modal sin guardar. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Error de servidor. | Muestra alerta de error. |
----
-## CU-033: Listado de competencias y resultados
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-033 |
-| **Nombre** | Listado de competencias y resultados |
-| **Descripción** | Visualización centralizada de eventos y marcas. |
-| **Actores** | Entrenador |
-| **Pre condiciones** | Acceso al módulo. |
-| **Post Condiciones** | Tablas visibles. |
-| **Referencia a requisitos** | RF-033 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Accede a la página. | Carga datos desde API. |
-| 2 | | Muestra tablas con columnas relevantes (Nombre, Fecha, Lugar / Atleta, Prueba, Marca). |
-**Flujo alterno:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Tabla vacía. | Muestra mensaje gráfico "No hay datos registrados". |
----
-## CU-034: Búsqueda de competencias y resultados
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-034 |
-| **Nombre** | Búsqueda de competencias y resultados |
-| **Descripción** | Filtrado de listas por nombre, fecha o atleta. |
-| **Actores** | Entrenador |
-| **Pre condiciones** | Listas con datos. |
-| **Post Condiciones** | Resultados filtrados. |
-| **Referencia a requisitos** | RF-034 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Ingresa texto en barras de búsqueda ("Buscar por nombre...", "Buscar por atleta..."). | |
-| 2 | (Automático) El sistema filtra la lista en tiempo real (o al presionar Enter) mostrando solo coincidencias. | |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Sin coincidencias. | Muestra "No se encontraron resultados/competencias". |
----
-## CU-035: Registro de baremos específicos
-| Campo | Descripción |---|
-|---|---|---|
-| **Identificador** | CU-035 |
-| **Nombre** | Registro de baremos específicos |
-| **Descripción** | Definición de rangos de clasificación con valores mínimos, máximos y etiquetas (A, B, C / Clasificación). |
-| **Actores** | Entrenador |
-| **Pre condiciones** | Prueba seleccionada. |
-| **Post Condiciones** | Definición de baremo guardada. |
-| **Referencia a requisitos** | RF-035 |
-**Flujo normal de eventos:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | (Dentro de `BaremoModal` o conf. de prueba) Agrega una fila de clasificación. | Sistema habilita campos: Marca Min, Marca Max, Clasificación. |
-| 2 | Ingresa valores (Ej. 10.0 - 12.0 = "A"). | |
-| 3 | Guarda el conjunto. | Asocia la matriz de baremos a la prueba/categoría. |
-**Flujo alterno:**
-| # | Actor (Acción) | Sistema (Reacción) |
-|---|---|---|
-| 1 | Elimina una fila de clasificación. | Quita el rango de la definición visual antes de guardar. |
-**Errores:**
-| # | Error | Sistema (Mensaje/Acción) |
-|---|---|---|
-| 1 | Rangos solapados (si hubiera validación). | Error "Los rangos no pueden superponerse". |
+| 1 | El registro está bloqueado o eliminado. | El sistema muestra un error "No se pudo cambiar el estado" y refresca la vista para mostrar la información actual. |
