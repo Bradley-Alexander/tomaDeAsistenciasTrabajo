@@ -9,7 +9,7 @@ format:
     number-sections: true
     theme: lumen
 ---
-
+# Análisis Semántico
 ## 3. Análisis Semántico: La Fase de Validación de Significado
 
 El **Análisis Semántico** representa la transición entre la estructura gramatical pura y la generación de código ejecutable. Su objetivo es garantizar la coherencia lógica del programa mediante la aplicación de **reglas estáticas** que no pueden ser descritas por una Gramática Independiente del Contexto (GIC).
