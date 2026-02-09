@@ -14,16 +14,17 @@ format:
 El análisis semántico es un componente del Procesamiento del Lenguaje Natural (PLN) que permite a las computadoras interpretar el significado, contexto e intención de palabras y frases, yendo más allá de la estructura sintáctica. Esta tecnología busca entender qué se quiere decir realmente, identificando relaciones entre conceptos, sentimientos y entidades en textos no estructurados. 
 
 Aspectos clave del análisis semántico
-Comprensión contextual: Analiza cómo las palabras cambian de significado según el entorno de la frase, abordando la polisemia (palabras con varios significados) y homonimia.
-Intención y sentimiento: Identifica el propósito del emisor y la carga emocional del mensaje.
-Objetivo: Transforma el lenguaje natural en una representación formal que una máquina pueda procesar para tomar decisiones o extraer información útil.
-Diferencia de la sintaxis: Mientras el análisis sintáctico (o gramatical) se centra en la estructura, el análisis semántico se centra en el significado y la coherencia del conjunto. 
+
+* Comprensión contextual: Analiza cómo las palabras cambian de significado según el entorno de la frase, abordando la polisemia (palabras con varios significados) y homonimia.
+* Intención y sentimiento: Identifica el propósito del emisor y la carga emocional del mensaje.
+* Objetivo: Transforma el lenguaje natural en una representación formal que una máquina pueda procesar para tomar decisiones o extraer información útil.
+* Diferencia de la sintaxis: Mientras el análisis sintáctico (o gramatical) se centra en la estructura, el análisis semántico se centra en el significado y la coherencia del conjunto. 
 
 Aplicaciones del análisis semántico
-Chatbots y Asistentes Virtuales: Permite entender la intención del usuario para dar respuestas precisas.
-Motores de búsqueda: Ofrece resultados basados en conceptos en lugar de palabras clave exactas.
-Análisis de sentimiento: Evalúa opiniones de clientes en correos o redes sociales.
-Compiladores: En informática, asegura la coherencia del código, verificando tipos de datos y variables. 
+* Chatbots y Asistentes Virtuales: Permite entender la intención del usuario para dar respuestas precisas.
+* Motores de búsqueda: Ofrece resultados basados en conceptos en lugar de palabras clave exactas.
+* Análisis de sentimiento: Evalúa opiniones de clientes en correos o redes sociales.
+* Compiladores: En informática, asegura la coherencia del código, verificando tipos de datos y variables. 
 
 ---
 
