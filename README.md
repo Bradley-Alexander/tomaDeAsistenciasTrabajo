@@ -1,7 +1,6 @@
 ---
 title: "Informe Técnico: Profundización en Análisis Semántico y Traducción Dirigida por la Sintaxis"
-author: "Departamento de Ingeniería de Software"
-date: "2026-02-08"
+
 format:
   html:
     toc: true
